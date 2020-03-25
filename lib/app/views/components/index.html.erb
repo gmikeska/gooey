@@ -1,0 +1,33 @@
+<p id="notice"><%= notice %></p>
+
+<h1>components</h1>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>partial type</th>
+      <th>partial name</th>
+      <th>fields</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @components.each do |component| %>
+    <% @group = Group.find(component.group_id) %>
+    <% @groups = Group.all() %>
+      <tr>
+        <td><%= component.design_type %></td>
+        <td><%= component.design_name %></td>
+        <td><%= component.field_names.join(",") %></td>
+        <td><%= link_to 'Show', [@group, component] %></td>
+        <td><%= link_to 'Edit', edit_group_component_path(@group,component) %></td>
+        <td><%= link_to 'Destroy', [@group, component], method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New component', new_group_component_path %>

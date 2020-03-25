@@ -1,0 +1,7 @@
+<% if(@component.design_type == "component") %>
+  <h1>Editing <%= @component.group.name.capitalize %>:<%= @component.design_name.capitalize %> - <%= link_to 'Back', url_for(:back) %></h1>
+  <%= render 'form', component: @component, group:@component.group %>
+<% elsif(@component.design_name.nil?) %>
+  <h1>Editing <%= @component.group.name.capitalize %>:Plaintext - <%= link_to 'Back', url_for(:back) %></h1>
+  <%= render 'plain', component: @component, group:@component.group %>
+<% end %>

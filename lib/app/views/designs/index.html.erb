@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<h1>designs</h1>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Fields</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @designs.each do |design| %>
+      <tr>
+        <td><%= design.name %></td>
+        <td><%= design.field_names.join(',') %></td>
+        <td><%= link_to 'Show', design %></td>
+        <td><%= link_to 'Edit', edit_design_path(design) %></td>
+        <td><%= link_to 'Destroy', design, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New design', new_design_path %>

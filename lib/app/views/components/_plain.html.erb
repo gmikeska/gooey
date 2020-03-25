@@ -1,0 +1,15 @@
+<%=  bootstrap_form_with(model: [group,component], local: true) do |f| %>
+<%=  f.hidden_field :id, value: @component.id %>
+<%=  f.text_area :body, label:"content", id:"editor"%>
+<%= f.submit %>
+<% end %>
+
+<script>
+    // Turn off automatic editor creation first.
+    CKEDITOR.disableAutoInline = true;
+    CKEDITOR.replace( 'editor' );
+    $(()=>{
+
+      $("label").hide()
+    })
+</script>

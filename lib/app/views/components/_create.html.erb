@@ -1,0 +1,31 @@
+<%= bootstrap_form_with(model: [component.group,component], local: true) do |f| %>
+  <%= f.select :component_id, Component.all.collect { |p| [ p.name, p.id ] }, { include_blank: true } %>
+  <%= f.submit "Continue" %>
+<% end %>
+<small>Preview:</small>
+<div class="container" id="preview" style="border: 1px solid lightgray;">
+<br>
+<br>
+</div>
+<script>
+  $.ready(
+    $('#design_name').change(function() {
+
+      var data = "";
+      $.ajax({
+          type:"GET",
+          url : `../../../raw_component/${this.value}`,
+          async: false,
+          success : function(response) {
+            data = response;
+
+            $('#preview')[0].innerHTML = response
+          },
+          error: function() {
+              alert('Error occured');
+          }
+      });
+
+  })
+)
+</script>
