@@ -1,0 +1,8 @@
+Description:
+    Creates a model which inherits from Gooey:Group
+
+Example:
+    rails generate group_model Page
+
+    This will create:
+      Model: app/model/page.rb

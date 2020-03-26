@@ -1,0 +1,12 @@
+Description:
+    Creates a scaffold for a Gooey:Group relation
+
+Example:
+    rails generate group_scaffold Page
+
+    This will create:
+      Model: app/model/page.rb
+      Controller: app/controllers/pages_controller.rb
+      Test:       test/controllers/pages_controller_test.rb
+      Views:      app/views/pages/index.html.erb [...]
+      Helper:     app/helpers/pages_helper.rb
