@@ -1,12 +1,13 @@
 require "gooey/version"
-
-
-Dir["app/views/models"].each {|file| require file }
-Dir["app/views/controllers"].each {|file| require file }
-Dir["app/views/components"].each {|file| require file }
-Dir["app/views/designs"].each {|file| require file }
-
+require 'gooey/engine'
 module Gooey
   class Error < StandardError; end
-  # Your code goes here...
+
 end
+
+Dir["lib/generators/gooey"].each {|file| require file }
+Dir["lib/generators/gooey/controller"].each {|file| require file }
+Dir["app/models/gooey"].each {|file| require file }
+Dir["app/controllers/gooey"].each {|file| require file }
+Dir["app/views/gooey"].each {|file| require file }
+Dir["app/validators/gooey"].each {|file| require file }
