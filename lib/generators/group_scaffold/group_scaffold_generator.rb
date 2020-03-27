@@ -19,15 +19,16 @@ module Gooey
           generate "gooey:group_controller", "#{singular_name}", args
         end
       end
-
-
       def copy_view_files
           directory_path = File.join("app/views", controller_file_path)
           empty_directory directory_path
 
-          view_files.each do |file_name|
+          ['index','show'].each do |file_name|
             template "views/#{file_name}.html.erb", File.join(directory_path, "#{file_name}.html.erb")
           end
+      end
+      def add_routes
+        route "resources '#{plural_name}'"
       end
 
       private

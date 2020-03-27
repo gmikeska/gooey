@@ -1,6 +1,6 @@
 module Gooey
   # module Controllers
-    class ComponentsController < ActionController::Base
+    class ComponentsController < GooeyController
       before_action :set_component, only: [:show, :edit, :update, :destroy, :updateFields,:componentOnly]
 
       # GET /components

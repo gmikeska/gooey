@@ -1,6 +1,6 @@
 module Gooey
-  module Controllers
-    class GroupsController < ActionController::Base
+  # module Controllers
+    class GroupsController < GooeyController
       layout false, only: [:contentOnly]
       self.abstract!
 
@@ -33,5 +33,5 @@ module Gooey
           params.require(:group).permit(:name, :pathSlug, :content)
         end
     end
-  end
+  # end
 end

@@ -6,6 +6,7 @@ module Gooey
   require_dependency "gooey/models/design"
   require_dependency "gooey/models/group"
 
+  require_dependency "gooey/controllers/gooey_controller"
   require_dependency "gooey/controllers/components_controller"
   require_dependency "gooey/controllers/designs_controller"
   require_dependency "gooey/controllers/groups_controller"

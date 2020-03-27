@@ -1,12 +1,13 @@
 module Gooey
   # module Controllers
-    class DesignsController < ActionController::Base
+    class DesignsController < GooeyController
       before_action :set_design, only: [:show, :edit, :update, :destroy]
       layout false, only: [:designOnly]
       # GET /designs
       # GET /designs.json
       def index
         @designs = Design.all
+        format.html {render "designs/index"}
       end
 
       # GET /designs/1

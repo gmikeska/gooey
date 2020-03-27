@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources "pages"
   scope module: 'gooey' do
     resources :designs
     resources :components
