@@ -1,5 +1,5 @@
 module Gooey
-  module Controllers
+  # module Controllers
     class DesignsController < ActionController::Base
       before_action :set_design, only: [:show, :edit, :update, :destroy]
       layout false, only: [:designOnly]
@@ -80,8 +80,9 @@ module Gooey
 
         # Only allow a list of trusted parameters through.
         def design_params
-          params.require(:design).permit(:name, :fields)
+          params.require(:design).permit(:name, :fields,:options,:content_template,:tag)
+
         end
     end
-  end
+  # end
 end

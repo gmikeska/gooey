@@ -1,3 +1,4 @@
+require 'rails/generators'
 module Gooey
   module GeneratorHelpers
     attr_accessor :options, :attributes
@@ -15,9 +16,13 @@ module Gooey
         Rails::Generators::GeneratedAttribute.new(column.name.to_s, column.type.to_s)
       end
     end
+    def editable_attribute_symbols
+      editable_attributes.map { |a| ":"+a.name }.join(', ')
+    end
 
     def view_files
-      actions = %w(index new edit _form)
+      # actions = %w(index new edit _form)
+      actions = %w(index)
       actions << 'show' if show_action?
       actions
     end

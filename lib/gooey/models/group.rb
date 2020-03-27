@@ -1,7 +1,7 @@
 module Gooey
-  module Models
+  # module Models
     class Group < ActiveRecord::Base
-      # table_name_prefix("gooey_")
+      # table_name_prefix = "gooey_"
       self.abstract_class = true
       has_many :components
       validates :name, presence: true
@@ -37,5 +37,5 @@ module Gooey
       end
 
     end
-  end
+  # end
 end

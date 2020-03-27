@@ -1,8 +1,8 @@
 require 'json'
 module Gooey
-  module Models
+  # module Models
     class Component < ActiveRecord::Base
-      # table_name_prefix("gooey_")
+      self.table_name_prefix = "gooey_"
       serialize :fields, Hash
       serialize :html_options, Hash
 
@@ -151,5 +151,5 @@ module Gooey
           design.tag
         end
     end
-  end
+  # end
 end

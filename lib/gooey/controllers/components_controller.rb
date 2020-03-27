@@ -1,5 +1,5 @@
 module Gooey
-  module Controllers
+  # module Controllers
     class ComponentsController < ActionController::Base
       before_action :set_component, only: [:show, :edit, :update, :destroy, :updateFields,:componentOnly]
 
@@ -86,5 +86,5 @@ module Gooey
         end
 
     end
-  end
+  # end
 end

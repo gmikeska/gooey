@@ -10,10 +10,11 @@ module Gooey
   require_dependency "gooey/controllers/designs_controller"
   require_dependency "gooey/controllers/groups_controller"
 
-    # require_dependency "generators/generator_helpers"
-    # require_dependency "generators/group_controller/group_controller_generator"
-    # require_dependency "generators/group_controller/group_model_generator"
-    # require_dependency "generators/group_controller/group_scaffold_generator"
+    require_relative "generators/generator_helpers"
+    require_relative "generators/group_controller/group_controller_generator"
+    require_relative "generators/group_model/group_model_generator"
+    require_relative "generators/group_scaffold/group_scaffold_generator"
+    require_relative "generators/install/install_generator"
 
 
 end

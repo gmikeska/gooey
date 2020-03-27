@@ -1,4 +1,4 @@
-class <%= controller_class_name %>Controller < Gooey::Controllers::GroupController
+class <%= plural_name.capitalize %>Controller < Gooey::GroupController
 
   def index
   end
@@ -35,7 +35,7 @@ class <%= controller_class_name %>Controller < Gooey::Controllers::GroupControll
   private
 
    def <%= singular_name %>_params
-     params.require(:<%= singular_name %>).permit(<%= editable_attributes.map { |a| a.name.prepend(':') }.join(', ') %>)
+     params.require(:<%= singular_name %>).permit(<%= editable_attribute_symbols %>)
    end
 
 end

@@ -1,12 +1,12 @@
-<p id="notice"><%= notice %></p>
+<%= "<p id='notice'><%= notice %%></p>" %>
 
-<h1>Pages</h1>
+<h1><%= plural_name.capitalize %></h1>
 
 <table>
   <thead>
     <tr>
       <% editable_attributes.each do |attribute| %>
-        <%= "<th colspan="3">#{attribute.name}</th>" %>
+        <%= "<th colspan=3 >#{attribute.name}</th>" %>
       <% end -%>
     </tr>
   </thead>
@@ -15,13 +15,11 @@
     <%= "<% @#{plural_name}.each do |#{singular_name}| %%>" %>
       <tr>
         <% editable_attributes.each do |attribute| %>
-          <td> <%= "<%= #{singular_name}.#{attribute} %%>" %> </td>
+          <td> <%= "<%= #{singular_name}.#{attribute.name} %%>" %> </td>
         <% end -%>
-        <% if show_action? -%>
-          <%= "<td><%= link_to 'Show', #{singular_name}_path(#{singular_name}), class: 'btn btn-sm btn-outline-info' %%></td>" %>
-        <% end -%>
-          <%= "<td><%= link_to 'Edit', edit_#{singular_name}_path(#{singular_name}) %%></td>" %>
-          <%= "<td><%= link_to 'Destroy', #{singular_name}, method: :delete, data: { confirm: 'Are you sure?' } %%></td>" %>
+        <%= "<td><%= link_to 'Show', #{singular_name}_path(#{singular_name}), class: 'btn btn-sm btn-outline-info' %%></td>" %>
+        <%= "<td><%= link_to 'Edit', edit_#{singular_name}_path(#{singular_name}) %%></td>" %>
+        <%= "<td><%= link_to 'Destroy', #{singular_name}, method: :delete, data: { confirm: 'Are you sure?' } %%></td>" %>
       </tr>
      <%= "<% end %%>" %>
   </tbody>
@@ -29,4 +27,4 @@
 
 <br>
 
-<%= "<%= link_to 'New Page', new_#{singular_name}_path %%>" %>
+<%= "<%= link_to 'New #{singular_name.capitalize}', new_#{singular_name}_path %%>" %>

@@ -1,3 +1,4 @@
+require 'rails_helper'
 RSpec.describe Gooey do
   it "has a version number" do
     expect(Gooey::VERSION).not_to be nil

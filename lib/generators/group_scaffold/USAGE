@@ -2,7 +2,7 @@ Description:
     Creates a scaffold for a Gooey:Group relation
 
 Example:
-    rails generate group_scaffold Page
+    rails generate gooey:group_scaffold Page
 
     This will create:
       Model: app/model/page.rb

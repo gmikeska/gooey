@@ -1,6 +1,6 @@
 require 'generators/generator_helpers.rb'
 module Gooey
-  # module Generators
+  module Generators
     class GroupModelGenerator < Rails::Generators::NamedBase
       source_root File.expand_path('templates', __dir__)
       include Rails::Generators::ResourceHelpers
@@ -17,14 +17,15 @@ module Gooey
         end
 
       def copy_model
-        template "group_model.rb", File.join("app/models", "#{singular_name.capitalize}.rb")
+        template "models/group_model.rb", File.join("app/models", "#{singular_name.capitalize}.rb")
       end
 
       def copy_migrations
-        migration_template "create_groups.rb", "db/migrate/create_#{singular_name.pluralize}.rb"
+        migration_template "migrations/create_groups.rb", "db/migrate/create_#{singular_name.pluralize}.rb"
       end
-
-
+      def run_migrations
+        rake("db:migrate")
+      end
     end
-  # end
+  end
 end

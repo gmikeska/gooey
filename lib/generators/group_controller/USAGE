@@ -2,7 +2,7 @@ Description:
     Creates a controller for a Gooey:Group relation
 
 Example:
-    rails generate group_controller Page
+    rails generate gooey:group_controller Page
 
     This will create:
       Controller: app/controllers/pages_controller.rb

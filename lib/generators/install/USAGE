@@ -1,0 +1,8 @@
+Description:
+    Installs migrations for Gooey::Design and Gooey::Component
+
+Example:
+    rails generate gooey:install
+
+    This will create:
+      Model: app/model/page.rb
