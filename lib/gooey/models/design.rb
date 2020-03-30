@@ -61,17 +61,23 @@ module Gooey
         save()
       end
 
-      def append_template(toAppend,full_tag=true,renames=nil)
+      def append_template(toAppend,with_tag=true,renames=nil)
         if(toAppend.is_a? Design)
-          # if(!renames.nil?) #TODO: enamble renaming vars within appended template fragment
-          #   renames.each do |key, value|
-          #
-          #   end
-          # end
-          if(full_tag)
-            content_template = content_template + toAppend.template
+          if(with_tag)
+            appendStr = toAppend.template
           else
-            content_template = content_template + toAppend.content_template
+            appendStr = toAppend.content_template
+          end
+          if(!renames.nil?) # allow renaming of variables appended to template
+            renames.each do |key, value|
+              appendStr = appendStr.gsub(toAppend.varPrefix+key.to_s+toAppend.varSuffix,varPrefix+value+varSuffix)
+            end
+          end
+          toAppend.fields.each do |key, value| # copy field params from appended template
+            if(renames[key])                   # renaming fields to match those appended
+              key = renames[key]
+            end
+            fields[key] = value
           end
           content_template = content_template + appendStr
         elsif(toAppend.is_a? String)
@@ -80,18 +86,26 @@ module Gooey
         save()
       end
 
-      def prepend_template(toPrepend, full_tag=true, renames=nil)
+      def prepend_template(toPrepend, with_tag=true, renames=nil)
         if(toPrepend.is_a? Design)
-          # if(!renames.nil?) #TODO: enamble renaming vars within prepended template fragment
-          #   renames.each do |key, value|
-          #
-          #   end
-          # end
-          if(full_tag)
-            content_template = toAppend.template + content_template
+          if(with_tag)
+            prependStr = toAppend.template
           else
-            content_template = toAppend.content_template + content_template
+            prependStr = toAppend.content_template
           end
+          if(!renames.nil?) # allow renaming of variables prepended to template
+            renames.each do |key, value|
+              prependStr = prependStr.gsub(toPrepend.varPrefix+key.to_s+toPrepend.varSuffix,varPrefix+value+varSuffix)
+            end
+          end
+
+          toPrepend.fields.each do |key, value| # copy field params from prepended template
+            if(renames[key])                    # renaming fields to match those prepended
+              key = renames[key]
+            end
+            fields[key] = value
+          end
+          content_template = prependStr + content_template
         elsif(toPrepend.is_a? String)
           content_template = toPrepend + content_template
         end
@@ -113,6 +127,9 @@ module Gooey
         return opening_tag+content(values)+closing_tag
       end
 
+      def extend
+        return dup
+      end
       # protected
 
         def template_vars()
@@ -153,7 +170,6 @@ module Gooey
           end
           c = content_template
           vars = template_vars
-          puts "template_vars:#{template_vars}"
           vars.each do |var|
             search = varPrefix+var+varSuffix
             c = c.gsub(search, values[var.to_sym])
