@@ -6,8 +6,9 @@
   <thead>
     <tr>
       <% editable_attributes.each do |attribute| %>
-        <%= "<th colspan=3>#{attribute.name}</th>" %>
+        <%= "<th>#{attribute.name}</th>" %>
       <% end -%>
+      <th colspan=3></th>
     </tr>
   </thead>
 

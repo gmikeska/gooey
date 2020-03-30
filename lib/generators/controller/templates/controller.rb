@@ -1,5 +1,5 @@
 class <%= plural_name.capitalize+"Controller < Gooey::"+plural_name.capitalize+"Controller" %>
-
+  layout "application"
   def index
     @<%= plural_name %>= <%= singular_name.capitalize %>.all
   end

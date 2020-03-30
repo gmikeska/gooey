@@ -116,6 +116,7 @@ module Gooey
       # protected
 
         def template_vars()
+
           content_template.scan(scanner).flatten
         end
 

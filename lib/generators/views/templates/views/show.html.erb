@@ -2,11 +2,10 @@
 <%= "<div class='alert alert-primary' role='alert' id='notice' style='margin-top:1%;'><%= notice %%></div>" %>
 <%= "<% end %%>" %>
 
-<% editable_attributes.each do |attribute| %>
-<p>
-  <%= "<strong>#{attribute.name}</strong>" %>
-  <%= "<%= #{singular_name}.#{attribute.name} %%>" %>
-</p>
-<% end -%>
+<%= "<h1>#{singular_name.capitalize}: <%= @#{singular_name}.name %%></h1>"%>
+
+<div class="container">
+<%= "<%== @#{singular_name}.as_html %%>" %>
+</div>
 
 <%= "<%= link_to 'Edit', edit_#{singular_name}_path(@#{singular_name}) %%> | <%= link_to 'Back', #{singular_name}_path %%>" %>

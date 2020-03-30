@@ -136,6 +136,7 @@ module Gooey
 
         def opening_tag
           openingTag = "<#{tag}"
+          openingTag = openingTag+" "+css_classes
           options.each do |key, value|
             openingTag = openingTag+" "+key+"='#{value}'"
           end
