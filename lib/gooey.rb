@@ -16,6 +16,9 @@ module Gooey
     require_relative "generators/group_model/group_model_generator"
     require_relative "generators/group_scaffold/group_scaffold_generator"
     require_relative "generators/install/install_generator"
+    require_relative "generators/model/model_generator"
+    require_relative "generators/controller/controller_generator"
+    require_relative "generators/views/views_generator"
 
 
 end

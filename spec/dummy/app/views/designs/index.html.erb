@@ -5,19 +5,42 @@
 <table>
   <thead>
     <tr>
+      
         <th colspan=3>name</th>
-    </tr>
+      
+        <th colspan=3>fields</th>
+      
+        <th colspan=3>options</th>
+      
+        <th colspan=3>content_template</th>
+      
+        <th colspan=3>varPrefix</th>
+      
+        <th colspan=3>varSuffix</th>
+      
+        <th colspan=3>tag</th>
+          </tr>
   </thead>
 
   <tbody>
     <% @designs.each do |design| %>
       <tr>
-
+        
           <td> <%= design.name %> </td>
-
-          <td> <%= design.slug %> </td>
-                <td><%= link_to 'Show', page_path(design), class: 'btn btn-sm btn-outline-info' %></td>
-        <td><%= link_to 'Edit', edit_page_path(design) %></td>
+        
+          <td> <%= design.fields %> </td>
+        
+          <td> <%= design.options %> </td>
+        
+          <td> <%= design.content_template %> </td>
+        
+          <td> <%= design.varPrefix %> </td>
+        
+          <td> <%= design.varSuffix %> </td>
+        
+          <td> <%= design.tag %> </td>
+                <td><%= link_to 'Show', design_path(design), class: 'btn btn-sm btn-outline-info' %></td>
+        <td><%= link_to 'Edit', edit_design_path(design) %></td>
         <td><%= link_to 'Destroy', design, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
      <% end %>

@@ -6,7 +6,7 @@ module Gooey
       # GET /components
       # GET /components.json
       def index
-        @components = component.all
+        @components = Gooey::Component.all
       end
 
       # GET /components/1
@@ -26,7 +26,7 @@ module Gooey
 
       # GET /components/new
       def new
-        @component = Component.new
+        @component = Gooey::Component.new
       end
 
       # GET /components/1/edit
@@ -37,7 +37,7 @@ module Gooey
       # POST /components
       # POST /components.json
       def create
-        @component = Component.new(component_params)
+        @component = Gooey::Component.new(component_params)
 
         respond_to do |format|
           if @component.save
@@ -77,7 +77,7 @@ module Gooey
       private
         # Use callbacks to share common setup or constraints between actions.
         def set_component
-          @component = Component.find(params[:id])
+          @component = Gooey::Component.find(params[:id])
         end
 
         # Only allow a list of trusted parameters through.

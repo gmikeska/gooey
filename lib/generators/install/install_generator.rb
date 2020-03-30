@@ -6,7 +6,7 @@ module Gooey
       # include Rails::Generators::ResourceHelpers
       include Rails::Generators::Migration
       include GeneratorHelpers
-      desc "Installs migrations for Gooey::Design and Gooey::Component"
+      desc "Installs migrations & routes for Gooey::Design and Gooey::Component"
       def self.next_migration_number(path)
           unless @prev_migration_nr
             @prev_migration_nr = Time.now.utc.strftime("%Y%m%d%H%M%S").to_i
@@ -20,15 +20,30 @@ module Gooey
         migration_template "migrations/create_designs.rb", "db/migrate/create_designs.rb"
         migration_template "migrations/create_components.rb", "db/migrate/create_components.rb"
       end
-      def add_routes
-        route %Q(scope module: 'gooey' do
-  resources :designs
-  resources :components
-end
-)
+      def create_design_model
+        generate "gooey:model", "design"
+      end
+      def create_component_model
+        generate "gooey:model", "component"
       end
       def run_migrations
         rake("db:migrate")
+      end
+      def create_design_controller
+        generate "gooey:controller", "design"
+      end
+      def create_component_controller
+        generate "gooey:controller", "component"
+      end
+      def create_design_views
+        generate "gooey:views", "design"
+      end
+      def create_component_views
+        generate "gooey:views", "component"
+      end
+      def add_routes
+        route "resources :designs"
+        route "resources :components"
       end
     end
   end

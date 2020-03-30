@@ -6,8 +6,7 @@ module Gooey
       # GET /designs
       # GET /designs.json
       def index
-        @designs = Design.all
-        format.html {render "designs/index"}
+        @designs = Gooey::Design.all
       end
 
       # GET /designs/1
@@ -22,7 +21,7 @@ module Gooey
 
       # GET /designs/new
       def new
-        @design = Design.new
+        @design = Gooey::Design.new
       end
 
       # GET /designs/1/edit
@@ -32,7 +31,7 @@ module Gooey
       # POST /designs
       # POST /designs.json
       def create
-        @design = Design.new(design_params)
+        @design = Gooey::Design.new(design_params)
 
         respond_to do |format|
           if @design.save
@@ -72,10 +71,10 @@ module Gooey
       private
         # Use callbacks to share common setup or constraints between actions.
         def set_design
-          if(Design.where({name:params[:id]}).exists?)
-              @design = Design.where({name:params[:id]})[0]
+          if(Gooey::Design.where({name:params[:id]}).exists?)
+              @design = Gooey::Design.where({name:params[:id]})[0]
           else
-              @design = Design.find(params[:id])
+              @design = Gooey::Design.find(params[:id])
           end
         end
 

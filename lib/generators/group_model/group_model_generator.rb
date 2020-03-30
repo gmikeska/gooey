@@ -17,7 +17,7 @@ module Gooey
         end
 
       def copy_model
-        template "models/group_model.rb", File.join("app/models", "#{singular_name.capitalize}.rb")
+        template "models/group_model.rb", File.join("app/models", "#{singular_name}.rb")
       end
 
       def copy_migrations
