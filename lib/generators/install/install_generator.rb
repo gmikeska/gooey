@@ -19,12 +19,16 @@ module Gooey
       def copy_migrations
         migration_template "migrations/create_designs.rb", "db/migrate/create_designs.rb"
         migration_template "migrations/create_components.rb", "db/migrate/create_components.rb"
+        migration_template "migrations/create_galleries.rb", "db/migrate/create_galleries.rb"
       end
-      def create_design_model
+      def create_models
         generate "gooey:model", "design"
       end
       def create_component_model
         generate "gooey:model", "component"
+      end
+      def create_file_manager_model
+        generate "gooey:model", "gallery"
       end
       def run_migrations
         rake("db:migrate")
@@ -34,16 +38,24 @@ module Gooey
       end
       def create_component_controller
         generate "gooey:controller", "component"
+        generate "gooey:controller", "gallery"
+      end
+      def create_gallery_controller
+        generate "gooey:controller", "component"
+        generate "gooey:controller", "gallery"
       end
       def create_design_views
         generate "gooey:views", "design"
       end
       def create_component_views
         generate "gooey:views", "component"
+        generate "gooey:views", "gallery"
       end
       def add_routes
         route "resources :designs"
         route "resources :components"
+        route "resources :galleries"
+        route "get '/galleries/:id/upload', to: 'galleries#upload'"
       end
     end
   end

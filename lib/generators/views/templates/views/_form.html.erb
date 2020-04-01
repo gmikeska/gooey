@@ -13,7 +13,7 @@
   <% editable_attributes.each do |attribute| %>
 
   <div class="field">
-    <%= "<%= form.text_field :#{attribute} %%>" %>
+    <%= "<%= form.text_field :#{attribute.name} %%>" %>
   </div>
   <% end  %>
   <div class="actions">

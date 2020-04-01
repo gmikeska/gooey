@@ -5,9 +5,6 @@ module Gooey
       self.table_name_prefix = "gooey_"
       serialize :fields, Hash
       serialize :html_options, Hash
-
-      attribute :css_functional_class, :string
-      attribute :css_style_class, :string
       attribute :varPrefix, :string
       attribute :varSuffix, :string
 
@@ -94,13 +91,6 @@ module Gooey
         return data
       end
 
-      def css_classes(additional_css_classes="")
-        cssStyles =[]
-        cssStyles.concat(css_functional_class.split(' ')) # accommodate multiple functional
-        cssStyles.concat(css_style_class.split(' '))      # and style classes
-        cssStyles.concat(additional_css_classes.split(' '))
-        return [css_functional_class,css_style_class,additional_css_classes].join(" ")
-      end
 
       def scanner
         Regexp.new(Regexp.escape(varPrefix)+"("+"\\w+"+")"+Regexp.escape(varSuffix))
