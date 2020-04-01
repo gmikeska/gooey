@@ -14,7 +14,7 @@ module Gooey
             empty_directory directory_path
             if(singular_name == "gallery")
               templateDirectory = "fileViews"
-              names = ['index','show','edit','new','_form','_add_file']
+              names = ['index','show','edit','new','_form','_add_file','_show_files']
             else
               templateDirectory = "views"
               names = ['index','show','edit','new','_form']

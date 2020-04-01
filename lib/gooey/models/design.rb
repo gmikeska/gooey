@@ -225,17 +225,19 @@ module Gooey
             returnVal = returnVal+":"+typeOf(value[0])
           end
           return returnVal
+        elsif value.split('.')[0] == "file"
+          returnVal = "file"
         else
-        begin
-          uri = URI.parse(value)
-          %w( http https ).include?(uri.scheme)
-        rescue URI::BadURIError
-          isUrl = false
-        rescue URI::InvalidURIError
-          isUrl = false
-        else
-          isUrl = true
-        end
+          begin
+            uri = URI.parse(value)
+            %w( http https ).include?(uri.scheme)
+          rescue URI::BadURIError
+            isUrl = false
+          rescue URI::InvalidURIError
+            isUrl = false
+          else
+            isUrl = true
+          end
           if(isUrl)
             return "url"
           end

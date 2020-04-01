@@ -1,9 +1,7 @@
 <% if (singular_name.capitalize == "Gallery") %><%=%Q(class #{singular_name.capitalize} < ActiveRecord::Base
   has_many_attached :files
-  def update(params)
-    if(params[:name])
-      name = params[:name]
-    end
+  def upload(params)
+
     if(params[:files])
           files.attach(params[:files])
     end

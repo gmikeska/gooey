@@ -4,29 +4,66 @@
 
 <%="<h1>Gallery: <%= @gallery.name %%></h1>"%>
 
-<%="<div class='container'>"%>
-  <%="<table class='table'>"%>
-    <%="<thead>"%>
-      <%="<th>Image</th>"%>
-      <%="<th>Name</th>"%>
-      <%="<th>Created at:</th>"%>
-      <%="<th>Size</th>"%>
-      <%="<th colspan=2></th>"%>
-    <%="</thead>"%>
-    <%="<tbody>"%>
-      <%="<% @gallery.files.each do |file| %%>"%>
-      <%="<tr>"%>
-        <%="<td><%= image_tag file.variant(resize_to_limit: [100, 100]) %%></td>"%>
-        <%="<td><%= link_to file.filename, url_for(file) %%></td>"%>
-        <%="<td><%= file.created_at %%></td>"%>
-        <%="<td><%= file.byte_size/1000 %%> kB</td>"%>
-        <%="<td><%= link_to 'Show', url_for(file), class: 'btn btn-sm btn-outline-info' %%></td>"%>
-        <%="<td><%= link_to 'Delete', file, method: :delete, data: { confirm: 'Are you sure?' } %%></td>"%>
-      <%="</tr>"%>
-      <%="<% end %%>"%>
-    <%="</tbody>"%>
-  <%="</table>"%>
 
-<%="</div>"%>
+<%="<%= render 'show_files', gallery: @gallery %%>"%>
 
-<%="<%= link_to 'Add File', edit_gallery_path(@gallery) | link_to 'Back', galleries_path %%>"%>
+<%="<a href=''#' id='startUpload'>Upload File</a> |<%= link_to 'Back', galleries_path %%>"%>
+
+<%='<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLiveLabel" aria-hidden="true" style="display: none;">'%>
+  <%='<div class="modal-dialog" role="document">'%>
+    <%='<div class="modal-content">'%>
+      <%='<div class="modal-header">'%>
+        <%='<h5 class="modal-title">Upload Files</h5>'%>
+        <%='<button type="button" class="close" data-dismiss="modal" aria-label="Close">'%>
+          <%='<span aria-hidden="true">&times;</span>'%>
+        <%='</button>'%>
+      <%='</div>'%>
+      <%='<div class="modal-body">'%>
+        <%="<%= render 'add_file', gallery: @gallery %%>"%>
+      <%='</div>'%>
+      <%='<div class="modal-footer">'%>
+        <%='<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>'%>
+        <%='<button type="button" class="btn btn-primary" id="submit">Upload</button>'%>
+      <%='</div>'%>
+    <%='</div>'%>
+  <%='</div>'%>
+<%='</div>'%>
+<%='<script>'+%Q(
+    $('body').ready(()=>{
+      completeUpload = ()=>{
+        pth = $('form')[0].action
+        pth = pth.replace('upload','show_files')
+        $.get(pth,(content)=>{
+            $("#fileList").replaceWith(content)
+        })
+        $('#uploadModal').modal('hide')
+      }
+      $('#uploadModal').modal({
+        show: false
+      })
+      $('input','.actions').hide()
+      $('#startUpload').click((e)=>{
+        e.preventDefault()
+        $('#uploadModal').modal('show')
+      })
+      $('#submit').click(()=>{
+        uf = $('form')
+        data = new FormData($('form')[0])
+        for(let n=0; n < $(':file')[0].files.length; n++)
+        {
+          data.append("files",$(':file')[0].files[0])
+        }
+        $.ajax({
+            url: $('form')[0].action,
+            data: data,
+            type: 'POST',
+            contentType: false,
+            processData: false,
+            success:()=>{
+              completeUpload()
+            }
+        });
+      })
+    })
+  </script>
+)%>

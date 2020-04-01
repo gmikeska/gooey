@@ -56,6 +56,8 @@ module Gooey
         route "resources :components"
         route "resources :galleries"
         route "get '/galleries/:id/upload', to: 'galleries#upload'"
+        route "patch '/galleries/:id/upload', to: 'galleries#upload'"
+        route "get '/galleries/:id/show_files', to: 'galleries#show_files'"
       end
     end
   end

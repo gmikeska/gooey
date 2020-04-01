@@ -38,6 +38,7 @@ module Gooey
             return "Gooey::#{plural_name.capitalize}Controller"
           end
         end
+        
         def indexMethod
           if(singular_name == "design")
 
@@ -53,13 +54,31 @@ module Gooey
           end
           return outStr
         end
+
         def upload_method
           if(singular_name == "gallery")
 
             outStr = %Q(
   def upload
     set_#{singular_name}
-    render partial:"add_file"
+    if(params[:gallery][:files])
+
+      @gallery.upload(params[:gallery])
+    end
+  end)
+          else
+            outStr = ""
+          end
+          return outStr
+        end
+
+        def show_files_method
+          if(singular_name == "gallery")
+
+            outStr = %Q(
+  def show_files
+    set_#{singular_name}
+    render partial:"show_files"
   end)
           else
             outStr = ""

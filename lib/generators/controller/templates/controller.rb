@@ -30,7 +30,9 @@ before_action :set_#{singular_name}, only: [:show, :edit, :update, :destroy]
   end
 
   #{upload_method}
-  
+
+  #{show_files_method}
+
   def destroy
     @#{singular_name}.destroy
     redirect_to #{plural_name}_url, notice: '#{human_name} was successfully destroyed.'
