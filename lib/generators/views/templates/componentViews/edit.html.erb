@@ -2,4 +2,5 @@
 
 <%= "<%= render 'form', #{singular_name}: @#{singular_name} %%>" %>
 
-<%= [render_meta_link('Show',"@#{singular_name}"),render_meta_link('Back',"#{plural_name}_path")].join(" | ") %> 
+<%= "<%= link_to 'Show', @#{singular_name} %%>" %> |
+<%= "link_to 'Back', #{plural_name}_path %%>" %>

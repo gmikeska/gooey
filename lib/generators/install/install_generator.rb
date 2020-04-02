@@ -14,12 +14,13 @@ module Gooey
             @prev_migration_nr += 1
           end
           @prev_migration_nr.to_s
-        end
+      end
 
       def copy_migrations
         migration_template "migrations/create_designs.rb", "db/migrate/create_designs.rb"
         migration_template "migrations/create_components.rb", "db/migrate/create_components.rb"
         migration_template "migrations/create_galleries.rb", "db/migrate/create_galleries.rb"
+        migration_template "migrations/create_groups.rb", "db/migrate/create_groups.rb"
       end
       def create_models
         generate "gooey:model", "design"
@@ -38,10 +39,8 @@ module Gooey
       end
       def create_component_controller
         generate "gooey:controller", "component"
-        generate "gooey:controller", "gallery"
       end
       def create_gallery_controller
-        generate "gooey:controller", "component"
         generate "gooey:controller", "gallery"
       end
       def create_design_views

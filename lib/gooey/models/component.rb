@@ -3,11 +3,16 @@ module Gooey
   # module Models
     class Component < ActiveRecord::Base
       self.table_name_prefix = "gooey_"
+      belongs_to :group
       serialize :fields, Hash
       serialize :html_options, Hash
       attribute :varPrefix, :string
       attribute :varSuffix, :string
 
+      def name
+        # Fields are submitted to the controller by field key, so first update field, then update the rest of the model.
+        design.name
+      end
       def update(data)
         # Fields are submitted to the controller by field key, so first update field, then update the rest of the model.
         set_fields(data[:fields])
@@ -16,7 +21,7 @@ module Gooey
       end
 
       def field_names
-        fields.keys
+        self.fields.keys
       end
 
       def required_fields
@@ -37,8 +42,8 @@ module Gooey
 
       def field_types
         data = {}
-        field_values.each do |key, value|
-          data[key] = typeOf(value)
+        field_names.each do |name|
+          data[name] = get_dataType(name)
         end
         return data
       end
@@ -79,22 +84,45 @@ module Gooey
       end
 
       def options
-        data = Hash.new
-        keys = design.options.keys.concat(html_options).uniq
-        keys.each do |key|
-          if(!html_options[key].nil?)
-            data[key] = html_options[key]
-          else
-            data[key] = design.options[key]
-          end
-        end
-        return data
+        # data = Hash.new
+        # keys = design.options.keys.concat(html_options.keys).uniq
+
+        # keys.each do |key|
+        #   if(!html_options[key].nil?)
+        #     data[key] = html_options[key]
+        #   else
+        #     data[key] = design.options[key]
+        #   end
+        # end
+        return design.options
       end
 
 
       def scanner
         Regexp.new(Regexp.escape(varPrefix)+"("+"\\w+"+")"+Regexp.escape(varSuffix))
       end
+
+      # def build_editor_with(formObj,addLabel=true)
+      #   outStr = ""
+      #
+      #   field_types.each do |name, type|
+      #     if(addLabel)
+      #       outStr = outStr + formObj.label name.to_s
+      #     end
+      #       form_field_type = form_field_for_type(type)
+      #       outStr = outStr + formObj.send form_field_type, name.to_sym, value: fields[name]
+      #
+      #       # outStr = outStr + formObj.send form_field_type,name.to_sym, custom: :switch, checked: fields[name]
+      #
+      #       formObj.form_group name.to_sym do
+      #         get_field(name).each do |value|
+      #           outStr = outStr + formObj.text_field name.to_sym, value:fields[name]
+      #         end
+      #       end
+      #
+      #   end
+      #   return outStr
+      # end
 
       def as_html
         if(varPrefix.nil?)
@@ -105,17 +133,17 @@ module Gooey
           varSuffix = design.varSuffix
         end
 
-        return opening_tag+content+closingTag
+        return opening_tag+content+closing_tag
       end
       protected
         def content
-          c = content_template
-          vars = content_template.scan(scanner).flatten
-          vars.each do |var|
-            search = varPrefix+var+varSuffix
-            c = c.gsub(search, get_field[var.to_sym])
-          end
-          return c
+          # c = content_template
+          # vars = design.template_vars
+          # vars.each do |var|
+          #   search = varPrefix+var+varSuffix
+          #   c = c.gsub(search, get_field[var.to_sym])
+          # end
+          return design.content(fields)
         end
 
       private
@@ -123,10 +151,18 @@ module Gooey
         def content_template
           design.content_template
         end
-
+        # def form_field_for_type(typeStr)
+        #   if(type == "string")
+        #
+        #   elsif(type == "boolean")
+        #
+        #   elsif(type == "array:string")
+        #
+        #   end
+        # end
         def opening_tag
           openingTag = "<#{tag}"
-          openingTag = openingTag+" "+css_classes
+          openingTag = openingTag+" "
           options.each do |key, value|
             openingTag = openingTag+" "+key+"='#{value}'"
           end

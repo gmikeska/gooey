@@ -1,0 +1,25 @@
+<%= "<%= form_with(model: component, local: true) do |form| %%>" %>
+  <%= "<% if component.errors.any? %%>" %>
+    <%= "<div id='error_explanation'>" %>
+      <%= "<h2><%= pluralize(component.errors.count, 'error') %%> prohibited this component from being saved:</h2>" %>
+
+      <%= "<ul>" %>
+        <%= "<% component.errors.full_messages.each do |message| %%>" %>
+          <%= "<li><%= message %%></li>" %>
+        <%= "<% end %%>" %>
+      <%= "</ul>" %>
+    <%= "</div>" %>
+  <%= "<% end %%>" %>
+<%= "<% component.fields.each do |key,val|%%>" %>
+
+    <%= "<div class='field'>" %>
+      <%= "<%= form.label key.to_sym %%>" %>
+      <%= "<%= form.text_field key.to_sym, value:val %%>" %>
+    <%= "</div>" %>
+
+  <%= "<% end %%>" %>
+  <%= "<div class='actions'>" %>
+    <%= "<%= form.submit %%>" %>
+  <%= "</div>" %>
+
+<%= "<% end %%>" %>

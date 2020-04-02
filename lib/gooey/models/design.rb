@@ -57,6 +57,15 @@ module Gooey
       return data
     end
 
+    def new(**args)
+      args[:design_id] = self.id
+      Component.new(**args)
+    end
+    def create(**args)
+      args[:design_id] = self.id
+      Component.create(**args)
+    end
+
     def dataTypes
       data = {}
       field_names.map do |name, field|

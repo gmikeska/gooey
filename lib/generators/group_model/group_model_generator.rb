@@ -20,9 +20,9 @@ module Gooey
         template "models/group_model.rb", File.join("app/models", "#{singular_name}.rb")
       end
 
-      def copy_migrations
-        migration_template "migrations/create_groups.rb", "db/migrate/create_#{singular_name.pluralize}.rb"
-      end
+      # def copy_migrations
+      #   migration_template "migrations/create_groups.rb", "db/migrate/create_#{singular_name.pluralize}.rb"
+      # end
       def run_migrations
         rake("db:migrate")
       end

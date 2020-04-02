@@ -15,9 +15,12 @@ module Gooey
             if(singular_name == "gallery")
               templateDirectory = "fileViews"
               names = ['index','show','edit','new','_form','_add_file','_show_files']
-            else
+            elsif(['component','design'].include? singular_name)
               templateDirectory = "views"
-              names = ['index','show','edit','new','_form']
+              names = ['index','show','edit','new','_form','_add_file','_show_files']
+            else
+              templateDirectory = "groupViews"
+              names = ['index','show']
             end
 
             names.each do |file_name|
@@ -27,6 +30,30 @@ module Gooey
         private
         def show_action?
           return true
+        end
+        def render_meta_link(text,destination, opts="")
+          if(opts != "")
+            return "<%= link_to '#{text}', #{destination}, #{opts} %>"
+          else
+            return "<%= link_to '#{text}', #{destination} %>"
+          end
+
+        end
+        def render_td(content,indent=0,zoom=nil)
+          if(!zoom.nil?)
+            open = "<td style='zoom:#{zoom}'>"
+          else
+            open = "<td>"
+          end
+          close = "</td>"
+          indent.times {|x| open = " "+open}
+          return open+content+close
+        end
+        def render_th(content,indent=0)
+          open = "<th>"
+          close = "</th>"
+          indent.times {|x| open = " "+open}
+          return open+content+close
         end
     end
   end

@@ -12,21 +12,14 @@ module Gooey
       include Rails::Generators::Migration
       include GeneratorHelpers
 
-      desc "Installs model, controller, views & routes for a Relation"
-        def generate_model
-          if(!File.exist?("app/models/#{singular_name.capitalize}.rb"))
-            template "Relation.rb", File.join("app/models", "#{singular_name}.rb")
-          end
-        end
+      desc "Installs controller for specified Gooey::Model"
 
         def generate_controller
           if(!File.exist?("app/controllers/#{controller_file_name}_controller.rb"))
             template "controller.rb", File.join("app/controllers", "#{plural_name}_controller.rb")
           end
         end
-        def add_routes
-          route "resources :#{plural_name}"
-        end
+
         private
         def show_action?
           return true
@@ -38,52 +31,42 @@ module Gooey
             return "Gooey::#{plural_name.capitalize}Controller"
           end
         end
-        
-        def indexMethod
-          if(singular_name == "design")
 
-            outStr = %Q(
-  def index
-    @#{plural_name} = #{singular_name.capitalize}.where({primitive:false})
-  end)
+        def indexMethod
+          methodName = 'index'
+
+          if(singular_name == "design")
+            contents = "@#{plural_name} = #{singular_name.capitalize}.where({primitive:false})"
           else
-            outStr = %Q(
-  def index
-   @#{plural_name} = #{singular_name.capitalize}.all
-  end)
+            contents = "@#{plural_name} = #{singular_name.capitalize}.all"
           end
-          return outStr
+          return render_method(methodName,contents)
         end
 
         def upload_method
           if(singular_name == "gallery")
-
-            outStr = %Q(
-  def upload
-    set_#{singular_name}
+            methodName = "upload"
+            contents =
+   %Q(set_#{singular_name}
     if(params[:gallery][:files])
-
       @gallery.upload(params[:gallery])
-    end
-  end)
+    end)
+        return render_method(methodName,contents)
           else
-            outStr = ""
+            return ""
           end
-          return outStr
         end
 
         def show_files_method
           if(singular_name == "gallery")
-
-            outStr = %Q(
-  def show_files
-    set_#{singular_name}
-    render partial:"show_files"
-  end)
+            methodName = "show_files"
+            contents =
+   %Q(set_#{singular_name}
+    render partial:"show_files")
+        return render_method(methodName,contents)
           else
-            outStr = ""
+            return ""
           end
-          return outStr
         end
     end
   end

@@ -2,30 +2,27 @@
 
 <h1><%= plural_name.capitalize %></h1>
 
-<table>
+<table class="table">
   <thead>
-    <tr>
-      <% editable_attributes.each do |attribute| %>
-        <%= "<th>#{attribute.name}</th>" %>
-      <% end -%>
+    <tr><% display_attributes.each do |attribute| %><% if(attribute.name == "as_html") %>
+      <%= render_th('Preview') %> <% else %>
+      <%= render_th(attribute.name.humanize.titleize) %> <% end %><% end %>
       <th colspan=3></th>
     </tr>
   </thead>
 
   <tbody>
     <%= "<% @#{plural_name}.each do |#{singular_name}| %%>" %>
-      <tr>
-        <% editable_attributes.each do |attribute| %>
-          <td> <%= "<%= #{singular_name}.#{attribute.name} %%>" %> </td>
-        <% end -%>
-        <%= "<td><%= link_to 'Show', #{singular_name}_path(#{singular_name}), class: 'btn btn-sm btn-outline-info' %%></td>" %>
-        <%= "<td><%= link_to 'Edit', edit_#{singular_name}_path(#{singular_name}) %%></td>" %>
-        <%= "<td><%= link_to 'Destroy', #{singular_name}, method: :delete, data: { confirm: 'Are you sure?' } %%></td>" %>
+      <tr><% display_attributes.each do |attribute| %><% if(attribute.name == "as_html") %>
+        <%= render_td("<%== #{singular_name}.#{attribute.name} %%>",0,'.7') %> <% else %>
+        <%= render_td("<%= #{singular_name}.#{attribute.name} %%>") %> <% end %><% end %>
+
+        <%= render_td(render_meta_link('Show',"#{singular_name}_path(#{singular_name})","class: 'btn btn-sm btn-outline-info'")) %>
+        <%= render_td(render_meta_link('Edit',"edit_#{singular_name}_path(#{singular_name})")) %>
+        <%= render_td(render_meta_link('Destroy',singular_name,"method: :delete, data: { confirm: 'Are you sure?' }")) %>
       </tr>
      <%= "<% end %%>" %>
   </tbody>
 </table>
-
 <br>
-
-<%= "<%= link_to 'New #{singular_name.capitalize}', new_#{singular_name}_path %%>" %>
+<%= render_meta_link("New #{singular_name.capitalize}","new_#{singular_name}_path") %>

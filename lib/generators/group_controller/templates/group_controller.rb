@@ -1,4 +1,4 @@
-class <%= plural_name.capitalize %>Controller < Gooey::GroupController
+class <%= plural_name.capitalize %>Controller < Gooey::GroupsController
 
   def index
   end

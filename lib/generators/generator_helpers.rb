@@ -16,15 +16,27 @@ module Gooey
         Rails::Generators::GeneratedAttribute.new(column.name.to_s, column.type.to_s)
       end
     end
+    def display_attributes
+      if(singular_name == "component")
+        return [Rails::Generators::GeneratedAttribute.new('body', 'string'),Rails::Generators::GeneratedAttribute.new('name', 'string'),Rails::Generators::GeneratedAttribute.new('fields', 'string'),Rails::Generators::GeneratedAttribute.new('as_html', 'string')]
+      elsif(singular_name == "design")
+        return [Rails::Generators::GeneratedAttribute.new('name', 'string'),Rails::Generators::GeneratedAttribute.new('fields', 'string'),Rails::Generators::GeneratedAttribute.new('content_template', 'string'),Rails::Generators::GeneratedAttribute.new('functional_class', 'string'),Rails::Generators::GeneratedAttribute.new('tag', 'string'),Rails::Generators::GeneratedAttribute.new('as_html', 'string')]
+      else
+        return editable_attributes
+      end
+    end
     def editable_attribute_symbols
       editable_attributes.map { |a| ":"+a.name }.join(', ')
     end
 
-    def view_files
-      # actions = %w(index new edit _form)
-      actions = %w(index)
-      actions << 'show' if show_action?
-      actions
+    def render_method(methodName, contents="",only=nil)
+      outStr = %Q(
+  def #{methodName}
+    #{contents}
+  end)
+      if(only.nil? || only == singular_name)
+        return outStr
+      end
     end
   end
 end
