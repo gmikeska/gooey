@@ -25,10 +25,12 @@ module Gooey
           return true
         end
         def baseName
-          if(@base == "gallery")
+          if(singular_name == "gallery")
             return "ApplicationController"
-          else
+          elsif(['design','component'].include?(singular_name))
             return "Gooey::#{plural_name.capitalize}Controller"
+          else
+            return "Gooey::GroupsController"
           end
         end
 
@@ -57,6 +59,16 @@ module Gooey
           end
         end
 
+        def setter_method
+
+          if(['gallery','design','component'].include?(singular_name))
+            searchParam = "id"
+          else
+            searchParam = 'slug'
+          end
+          contents =  "@#{singular_name} = #{singular_name.capitalize}.find_by #{searchParam}: params[:#{searchParam}]"
+          return render_method("set_#{singular_name}",contents)
+        end
         def show_files_method
           if(singular_name == "gallery")
             methodName = "show_files"

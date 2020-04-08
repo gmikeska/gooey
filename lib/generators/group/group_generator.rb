@@ -16,14 +16,14 @@ module Gooey
 
       def generate_controller
         if(!File.exist?("app/controllers/#{controller_file_name}_controller.rb"))
-          generate "gooey:group_controller", "#{singular_name}"
+          generate "gooey:controller", "#{singular_name}"
         end
       end
       def copy_view_files
           generate "gooey:views", "#{singular_name}"
       end
       def add_routes
-        route "resources '#{plural_name}'"
+        route "resources '#{plural_name}', param: :slug, controller: '#{plural_name}'"
       end
       private
       def show_action?

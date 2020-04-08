@@ -11,10 +11,6 @@ module Gooey
         template "group_controller.rb", File.join("app/controllers", "#{plural_name}_controller.rb")
       end
 
-      def install_route
-        route "resources :#{plural_name}"
-      end
-
     end
   end
 end

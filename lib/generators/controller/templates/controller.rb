@@ -27,6 +27,7 @@ before_action :set_#{singular_name}, only: [:show, :edit, :update, :destroy]
   #{render_method(singular_name+'_params',
  %Q(params.require(:#{singular_name}).permit(#{editable_attribute_symbols})))}
 
-  #{render_method('set_'+singular_name,
- %Q(@#{singular_name} = #{singular_name.capitalize}.find(params[:id])))}
+  #{setter_method}
+
+
 end ) %>

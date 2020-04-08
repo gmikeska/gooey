@@ -1,43 +1,28 @@
 <%= "<p id='notice'><%= notice %%></p>" %>
 
-<%= "<h1>Components</h1>" %>
+<h1><%= plural_name.capitalize %></h1>
 
-<%= "<table class='table'>" %>
-  <%= "<thead>" %>
-    <%= "<tr>" %>
-      <%= "<th>Design Name</th>" %>
-      <%= "<th>Fields</th>" %>
-      <%= "<th>Preview</th>" %>
-      <%= "<th colspan=3></th>" %>
-    <%= "</tr>" %>
-  <%= "</thead>" %>
+<table class="table">
+  <thead>
+    <tr><% display_attributes.each do |attribute| %><% if(attribute.name == "as_html") %>
+      <%= render_th('Preview') %> <% else %>
+      <%= render_th(attribute.name.humanize.titleize) %> <% end %><% end %>
+      <th colspan=3></th>
+    </tr>
+  </thead>
 
-  <%= "<tbody>" %>
-    <%= "<% @components.each do |component| %%>" %>
-      <%= "<tr>" %>
-          <%= "<td><%= component.name %%></td>" %>
-          <%= "<td>" %>
-            <%= "<% component.fields.each do |key,value| %%>" %>
-                <%= "<div class='row'>" %>
-                  <%= "<div class='col'>" %>
-                    <%= "<strong><%= key %%></strong>" %>
-                  <%= "</div>" %>
-                  <%= "<div class='col'>" %>
-                    <%= "<%= value %%>" %>
-                  <%= "</div>" %>
-                <%= "</div>" %>
-               <%= "<% end %%>" %>
-          <%= "</td>" %>
-          <%= "<td><span style='zoom:.7'><%== component.as_html %%></span></td>" %>
-
-        <%= "<td><%= link_to 'Show', component_path(component), class: 'btn btn-sm btn-outline-info' %%></td>" %>
-        <%= "<td><%= link_to 'Edit', edit_component_path(component) %%></td>" %>
-        <%= "<td><%= link_to 'Destroy', component, method: :delete, data: { confirm: 'Are you sure?' } %%></td>" %>
-      <%= "</tr>" %>
+  <tbody>
+    <%= "<% @#{plural_name}.each do |#{singular_name}| %%>" %>
+      <tr><% display_attributes.each do |attribute| %><% if(attribute.name == "as_html") %>
+        <%= render_td("<%== #{singular_name}.as_html %%>",0,'.7') %> <% elsif(attribute.name == "fields") %>
+        <%= render_td("#{render_field_list}") %> <% else %>
+        <%= render_td("<%= #{singular_name}.#{attribute.name} %%>") %> <% end %><% end %>
+        <%= render_td(render_meta_link('Show',"#{singular_name}_path(#{singular_name})","class: 'btn btn-sm btn-outline-info'")) %>
+        <%= render_td(render_meta_link('Edit',"edit_#{singular_name}_path(#{singular_name})")) %>
+        <%= render_td(render_meta_link('Destroy',singular_name,"method: :delete, data: { confirm: 'Are you sure?' }")) %>
+      </tr>
      <%= "<% end %%>" %>
-  <%= "</tbody>" %>
-<%= "</table>" %>
-
-<%= "<br>" %>
-
-<%= "<%= link_to 'New Component', new_component_path %%>" %>
+  </tbody>
+</table>
+<br>
+<%= render_meta_link("New #{singular_name.capitalize}","new_#{singular_name}_path") %>

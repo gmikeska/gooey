@@ -17,7 +17,7 @@ module Gooey
               names = ['index','show','edit','new','_form','_add_file','_show_files']
             elsif(['component','design'].include? singular_name)
               templateDirectory = "views"
-              names = ['index','show','edit','new','_form','_add_file','_show_files']
+              names = ['index','show','edit','new','_form']
             else
               templateDirectory = "groupViews"
               names = ['index','show']
@@ -46,14 +46,19 @@ module Gooey
             open = "<td>"
           end
           close = "</td>"
-          indent.times {|x| open = " "+open}
-          return open+content+close
+          return open+content+close.indent(indent)
         end
         def render_th(content,indent=0)
           open = "<th>"
           close = "</th>"
-          indent.times {|x| open = " "+open}
-          return open+content+close
+          return open+content+close.indend(indent)
+        end
+        def render_field_list
+          %Q(<% design.fields.each do |k,v| %>
+            <div class="row">
+            <div class="col"><code><%= k %></code></div>
+            </div>
+          <% end %>)
         end
     end
   end

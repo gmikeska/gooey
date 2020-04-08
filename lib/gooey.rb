@@ -2,6 +2,7 @@ require_dependency "gooey/railtie"
 
 module Gooey
   # require_dependency "gooey/validators/design_validator.rb"
+  require_dependency "gooey/models/base"
   require_dependency "gooey/models/component"
   require_dependency "gooey/models/design"
   require_dependency "gooey/models/group"

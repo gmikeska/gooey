@@ -10,14 +10,12 @@
       <%= "</ul>" %>
     <%= "</div>" %>
   <%= "<% end %%>" %>
-<%= "<% component.fields.each do |key,val|%%>" %>
+  <%= "<div class='field' hidden>" %>
+    <%= "<%= form.text_field :body %%>" %>
+  <%= "</div>" %>
 
-    <%= "<div class='field'>" %>
-      <%= "<%= form.label key.to_sym %%>" %>
-      <%= "<%= form.text_field key.to_sym, value:val %%>" %>
-    <%= "</div>" %>
+  <%= "<%== component.build_editor_with form %%>" %>
 
-  <%= "<% end %%>" %>
   <%= "<div class='actions'>" %>
     <%= "<%= form.submit %%>" %>
   <%= "</div>" %>

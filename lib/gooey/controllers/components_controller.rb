@@ -17,7 +17,7 @@ module Gooey
 
 
       def componentOnly
-        render partial:@component.design_type.pluralize+'/'+@component.design_name, locals:@component.field_values
+        render partial:"preview"
       end
 
       def updateFields
@@ -54,9 +54,11 @@ module Gooey
       # PATCH/PUT /components/1.json
       def update
         respond_to do |format|
+          puts component_params
           if @component.update(component_params)
-            format.html { redirect_to @component.group, notice: 'component was successfully updated.' }
-            format.json { render :show, status: :ok, location: @component }
+            set_component
+            format.html { render partial:"preview" }
+            format.json { render partial:"preview", status: :ok, location: @component }
           else
             format.html { render :edit }
             format.json { render json: @component.errors, status: :unprocessable_entity }

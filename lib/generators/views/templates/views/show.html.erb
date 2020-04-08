@@ -8,4 +8,4 @@
 <%= "<%== @#{singular_name}.as_html %%>" %>
 <%= "</div>"%>
 
-<%= [render_meta_link('Edit',"edit_#{singular_name}_path(#{singular_name})"),render_meta_link('Back',"#{plural_name}_path")].join(" | ") %>
+<%= [render_meta_link('Edit',"edit_#{singular_name}_path(@#{singular_name})"),render_meta_link('Back',"#{plural_name}_path")].join(" | ") %>

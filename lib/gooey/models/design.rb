@@ -1,6 +1,6 @@
 require_dependency "gooey/validators/design_validator.rb"
 module Gooey
-  class Design < ActiveRecord::Base
+  class Design < Gooey::Base
     cattr_accessor :default_varPrefix, :default_varSuffix, :default_varName, :default_content
     self.table_name_prefix = "gooey_"
     self.default_varPrefix = "{"
@@ -8,8 +8,10 @@ module Gooey
     self.default_varName = "text"
     self.default_content = "Hello, world!"
     include ActiveModel::Validations
-    validates_with Gooey::Validators::DesignValidator
+    # validates_with Gooey::Validators::DesignValidator
     serialize :fields, Hash
+    serialize :subtemplates, Hash
+    serialize :actions, Hash
     serialize :options, Hash
     after_initialize do |design|
 
@@ -38,7 +40,9 @@ module Gooey
       el.options = args[:options]
       return el
     end
-
+    def resource_identifier
+      self.name
+    end
     def field_names
       fields.keys
     end
@@ -152,14 +156,14 @@ module Gooey
     end
 
     def scanner
-      Regexp.new(Regexp.escape(varPrefix)+"("+"\\w+"+")"+Regexp.escape(varSuffix))
+      Regexp.new(Regexp.escape(varPrefix)+"("+"\\S+"+")"+Regexp.escape(varSuffix))
     end
 
-    def as_html(values=nil)
+    def as_html(values=nil, include_scripts=true)
       if(values.nil?)
         values = defaults
       end
-      return opening_tag+content(values)+closing_tag
+      return opening_tag+content(values,include_scripts)+closing_tag
     end
 
     def extend
@@ -208,49 +212,168 @@ module Gooey
         return "</#{tag}>"
       end
 
-      def content(values=nil)
+      def content(values=nil,scripts=true)
         if(values.nil?)
           values = defaults
         end
+        data = prepData(values)
         c = content_template
         vars = template_vars
+
         vars.each do |var|
-          search = varPrefix+var+varSuffix
-          c = c.gsub(search, values[var.to_sym])
+          if(var.split(':')[0] == "sub")
+            if(var.split(':')[1] == "scripts")
+              val = renderSub(var.split(':')[1], scripts)
+            else
+              if(var.split(':')[2] && data[var.split(':')[2]] || !var.split(':')[2])
+                val = renderSub(var.split(':')[1], data)
+              elsif(var.split(':')[2] && !data[var.split(':')[2]])
+                val = " "
+              end
+            end
+          else
+            val = data[var]
+          end
+
+          c = process(c,var.to_s, val)
         end
         return c
       end
 
-    private
+    # private
+
+      def prepData(values)
+        data = Hash.new
+        subcomponents = []
+        values.each do |name, value|
+          dtype = get_dataType(name.to_sym)
+          if(dtype.include? "array")
+            subType = dtype.split(':')[1]
+            data[name.to_s] = []
+            value.each_index do |i|
+              data[name.to_s] << prepValue(value[i],subType)
+            end
+          else
+            data[name.to_s] = prepValue(value,dtype)
+          end
+        end
+
+        return data
+      end
+      def prepValue(value,type)
+        actualType = typeOf(value)
+
+        if(type.include?("pointer") && actualType.include?("pointer"))
+          link = get_url(value)
+          return link
+        else
+          return value
+        end
+      end
+      
+      def export
+        require('json')
+        JSON.pretty_generate({name:name, fields:fields,subtemplates:subtemplates, functional_class:functional_class, tag:tag})
+      end
+      def renderSub(subKey, data=nil)
+        isPlural = (subKey == subKey.pluralize)
+        isSingular = (subKey != subKey.pluralize)
+        singularSubkey = subKey.singularize
+        hasSingularSubtemplate = !self.subtemplates[singularSubkey].nil?
+        hasPluralSubtemplate = !self.subtemplates[subKey.pluralize].nil?
+
+        rendered = ""
+        if(isPlural && hasSingularSubtemplate && hasPluralSubtemplate)
+          varScanner = Regexp.new(Regexp.escape(varPrefix)+"("+"\\S+"+"):#{subKey.singularize}"+Regexp.escape(varSuffix))
+          countKey = self.subtemplates[subKey].scan(varScanner).flatten.first
+          if(countKey.nil?)
+            countKey = subKey
+          end
+          if(countKey == subKey)
+            token = "#{singularSubkey}"
+          else
+            token = "#{countKey}:#{singularSubkey}"
+          end
+          data[countKey.pluralize].each_index do |i|
+            item = data[countKey.pluralize][i]
+            line = renderSub(singularSubkey, item)
+            line = process(line,"i",i.to_s)
+            rendered = rendered+line
+          end
+          rendered = process(self.subtemplates[subKey],token,rendered)
+        elsif(isPlural && !hasPluralSubtemplate && hasSingularSubtemplate)
+          countKey = subKey
+          data[countKey].each_index do |i|
+            item = data[countKey][i]
+            line = renderSub(subKey.singularize, item)
+            line = process(line,"i",i.to_s)
+            rendered = rendered+line
+          end
+        else
+
+          rendered = process(self.subtemplates[subKey], subKey, data)
+        end
+        return rendered
+      end
+      def renderAction(actionName,onLoad = false)
+        if(actionName.is_a? Array)
+          scripts = []
+          actionName.each do |name|
+            scripts << actions[name]
+          end
+          renderScript(scripts, onLoad)
+        else
+          renderScript(actions[actionName],onLoad)
+        end
+      end
+      def process(templateString, key, val)
+
+          output = templateString.gsub(varPrefix+key.to_s+varSuffix,val)
+          return output
+      end
+      def renderScript(scriptxt, onLoad = false)
+        if(scriptxt.is_a? Array)
+          scriptxt = scriptxt.join("\n")
+          if(onLoad)
+            scriptxt = %Q(
+              $(()=>{
+                #{scriptxt}
+              })
+)
+          end
+        end
+        "<script>#{scriptxt}</script>"
+      end
 
       def typeOf(value)
         # value = parseValue(value)
-        if(["true","false"].include? value)
+        if([true,false].include? value)
           return "boolean"
-        elsif(value[0] == "[")
-          value = JSON.parse(value)
+        elsif(value.is_a? Hash)
+          return "Hash"
+        elsif(value.is_a? Array)
           returnVal = "array"
           if(value[0])
             returnVal = returnVal+":"+typeOf(value[0])
           end
           return returnVal
-        elsif value.split('.')[0] == "file"
-          returnVal = "file"
-        else
-          begin
-            uri = URI.parse(value)
-            %w( http https ).include?(uri.scheme)
-          rescue URI::BadURIError
-            isUrl = false
-          rescue URI::InvalidURIError
-            isUrl = false
+        elsif value.is_a? String
+          if is_pointer(value)
+            return "pointer:#{parse_pointer(value)[:type]}"
           else
-            isUrl = true
-          end
-          if(isUrl)
-            return "url"
-          end
+            begin
+              uri = URI.parse(value)
+              isUrl = %w( http https ).include?(uri.scheme)
+            rescue URI::BadURIError
+              isUrl = false
+            rescue URI::InvalidURIError
+              isUrl = false
+            end
+            if(isUrl)
+              return "url"
+            end
           return "string"
+          end
         end
       end
   end

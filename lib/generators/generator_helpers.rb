@@ -20,7 +20,7 @@ module Gooey
       if(singular_name == "component")
         return [Rails::Generators::GeneratedAttribute.new('body', 'string'),Rails::Generators::GeneratedAttribute.new('name', 'string'),Rails::Generators::GeneratedAttribute.new('fields', 'string'),Rails::Generators::GeneratedAttribute.new('as_html', 'string')]
       elsif(singular_name == "design")
-        return [Rails::Generators::GeneratedAttribute.new('name', 'string'),Rails::Generators::GeneratedAttribute.new('fields', 'string'),Rails::Generators::GeneratedAttribute.new('content_template', 'string'),Rails::Generators::GeneratedAttribute.new('functional_class', 'string'),Rails::Generators::GeneratedAttribute.new('tag', 'string'),Rails::Generators::GeneratedAttribute.new('as_html', 'string')]
+        return [Rails::Generators::GeneratedAttribute.new('name', 'string'),Rails::Generators::GeneratedAttribute.new('fields', 'string'),Rails::Generators::GeneratedAttribute.new('functional_class', 'string'),Rails::Generators::GeneratedAttribute.new('tag', 'string'),Rails::Generators::GeneratedAttribute.new('as_html', 'string')]
       else
         return editable_attributes
       end

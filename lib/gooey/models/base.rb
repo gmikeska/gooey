@@ -1,0 +1,57 @@
+require 'json'
+module Gooey
+  class Base < ActiveRecord::Base
+    self.abstract_class = true
+
+    def resource_type
+      self.class.table_name.camelize.singularize.downcase
+    end
+    def resource_scope
+      self.class.name.downcase
+    end
+    def resource_identifier
+      to_param
+    end
+    def pointer
+      return "#{resource_type}:#{resource_scope}:#{resource_identifier}"
+    end
+    def url
+      Rails.application.routes.url_helpers.polymorphic_url(self, only_path: true)
+    end
+    def get_url(pointer)
+      target = retrieve_pointer(pointer)
+      if(target.class.name == "ActiveStorage::Attachment")
+        Rails.application.routes.url_helpers.rails_blob_path(target, only_path: true)
+      else
+        return target.url
+      end
+    end
+    def retrieve_pointer(pointer)
+      pointer = parse_pointer(pointer)
+      searchScope = pointer[:scope].capitalize.constantize
+      if(searchScope.columns.to_a.select {|c| c.name == "slug" || c.name == "name"}.count == 0)
+        return searchScope.find(pointer[:slug])
+      else
+        if(searchScope.to_s == "Design")
+          return searchScope.where({name:pointer[:slug]}).first
+        elsif(pointer[:type] == "file")
+          return (searchScope.where({slug:pointer[:slug]}).first.files.select {|f| f.filename == pointer[:resource]}).first
+        else
+          return searchScope.where({slug:pointer[:slug]}).first
+        end
+      end
+    end
+    def parse_pointer(pointer)
+      parts = pointer.split(":")
+
+      data = {type:parts[0], scope:parts[1].capitalize, slug:parts[2]}
+      if(!parts[3].nil?)
+        data[:resource] = parts[3]
+      end
+      return data
+    end
+    def is_pointer(pointer)
+      return !!pointer.match(/(\S+):(\S+):(\S+)/)
+    end
+  end
+end

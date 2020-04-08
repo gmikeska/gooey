@@ -5,6 +5,8 @@ class CreateDesigns < ActiveRecord::Migration[6.0]
       t.boolean :primitive, default:false
       t.string :fields
       t.string :options
+      t.string :subtemplates
+      t.string :actions
       t.text :content_template
       t.string :varPrefix
       t.string :functional_class
