@@ -43,10 +43,59 @@ module Gooey
     def resource_identifier
       self.name
     end
-    def field_names
-      fields.keys
+    def params
+      data = Design.columns.collect{|c| c.name.to_sym }
+      data.delete(:fields)
+      data << {fields:self.field_names(true)}
+      return data
     end
-
+    def field_names(recursive = false)
+      names = fields.keys
+      if(recursive)
+        fields.each do |name, value|
+            subs = subnames_for(value[:default])
+            if(!subs.nil?)
+              names.delete(name)
+              names << { name => subs}
+            end
+        end
+      end
+      return names
+    end
+    def subnames_for(obj)
+      if(obj.is_a? Array)
+        data = []
+        obj.each do |sub|
+          data << subnames_for(sub)
+        end
+      end
+      if(obj.is_a? Hash)
+        data = obj.keys
+        obj.each do |name,value|
+          if(value.is_a?(Hash) || value.is_a?(Array))
+            data.delete(name)
+            subs = {}
+            subs[name] = subnames_for(value)
+            data << subs
+          end
+        end
+      end
+      return data
+    end
+    def names_at(search)
+      firstKey = search.shift
+      search.unshift(:default)
+      search.unshift(firstKey)
+      cursor = fields
+      while(search.length > 0)
+        nextKey = search.shift
+        puts "- #{nextKey}"
+        if((cursor.is_a?(Hash) && cursor.include?(nextKey)) || (cursor.is_a?(Array) && cursor.length > nextKey))
+          cursor = cursor[nextKey]
+        end
+      end
+      return subnames_for(cursor)
+    end
     def required_fields
       fields.select do |field|
         field[:required] == "true"
@@ -152,7 +201,21 @@ module Gooey
     # end
 
     def get_dataType(field_name)
-      typeOf(fields[field_name.to_sym][:default])
+      if(field_name.is_a? Array)
+        firstKey = field_name.shift
+        field_name.unshift(:default)
+        field_name.unshift(firstKey)
+        cursor = fields
+        while(field_name.length > 0)
+          nextKey = field_name.shift
+          if((cursor.is_a?(Hash) && cursor.include?(nextKey)) || (cursor.is_a?(Array) && cursor.length > nextKey))
+            cursor = cursor[nextKey]
+          end
+        end
+        return(typeOf(cursor))
+      else
+        typeOf(fields[field_name.to_sym][:default])
+      end
     end
 
     def scanner
@@ -212,6 +275,10 @@ module Gooey
         return "</#{tag}>"
       end
 
+      def resource_scope
+        return "design"
+      end
+
       def content(values=nil,scripts=true)
         if(values.nil?)
           values = defaults
@@ -262,15 +329,29 @@ module Gooey
       end
       def prepValue(value,type)
         actualType = typeOf(value)
-
         if(type.include?("pointer") && actualType.include?("pointer"))
           link = get_url(value)
           return link
+        elsif(actualType.include? "Hash")
+          return render_subcomponent(value)
         else
           return value
         end
       end
-      
+      def render_subcomponent(sub)
+
+        res_data = retrieve_pointer(sub[:pointer])
+        subData =  Hash.new
+        contentOnly = sub[:contentOnly]
+        subData = sub.reject {|k,v| k == :pointer || k == :contentOnly}
+        if(contentOnly)
+          subContent =  res_data.content(subData)
+        else
+          subContent =  res_data.as_html(subData)
+        end
+        puts subContent
+        return subContent
+      end
       def export
         require('json')
         JSON.pretty_generate({name:name, fields:fields,subtemplates:subtemplates, functional_class:functional_class, tag:tag})

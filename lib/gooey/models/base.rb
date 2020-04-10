@@ -4,7 +4,7 @@ module Gooey
     self.abstract_class = true
 
     def resource_type
-      self.class.table_name.camelize.singularize.downcase
+      "gooey"
     end
     def resource_scope
       self.class.name.downcase
@@ -19,19 +19,24 @@ module Gooey
       Rails.application.routes.url_helpers.polymorphic_url(self, only_path: true)
     end
     def get_url(pointer)
-      target = retrieve_pointer(pointer)
-      if(target.class.name == "ActiveStorage::Attachment")
-        Rails.application.routes.url_helpers.rails_blob_path(target, only_path: true)
+      puts "*************"
+      puts pointer
+      puts "*************"
+      if(pointer.include? "file")
+        target = parse_pointer(pointer)
+        return target[:scope].capitalize.constantize.where({slug:target[:slug]}).first.get_url(target[:resource])
       else
-        return target.url
+        return retrieve_pointer(pointer).url
       end
     end
     def retrieve_pointer(pointer)
       pointer = parse_pointer(pointer)
-      searchScope = pointer[:scope].capitalize.constantize
+        searchScope = pointer[:scope].capitalize.constantize
+
       if(searchScope.columns.to_a.select {|c| c.name == "slug" || c.name == "name"}.count == 0)
         return searchScope.find(pointer[:slug])
       else
+
         if(searchScope.to_s == "Design")
           return searchScope.where({name:pointer[:slug]}).first
         elsif(pointer[:type] == "file")
@@ -43,10 +48,10 @@ module Gooey
     end
     def parse_pointer(pointer)
       parts = pointer.split(":")
-
-      data = {type:parts[0], scope:parts[1].capitalize, slug:parts[2]}
-      if(!parts[3].nil?)
-        data[:resource] = parts[3]
+      if(parts[0] == "file")
+        data = {type:parts[0], scope:"Gallery", slug:parts[1], resource:parts[2]}
+      else
+        data = {type:parts[0], scope:parts[1].capitalize, slug:parts[2]}
       end
       return data
     end

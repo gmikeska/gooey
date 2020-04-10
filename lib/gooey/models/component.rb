@@ -18,11 +18,102 @@ module Gooey
       data[:fields] = fields
       super(data)
     end
-
-    def field_names
-      self.fields.keys
+    def field_names(recursive = false)
+      names = fields.keys
+      if(recursive)
+        fields.each do |name, value|
+            subs = subnames_for(value)
+            if(!subs.nil?)
+              names.delete(name)
+              names << { name => subs}
+            end
+        end
+      end
+      return names
     end
+    def subnames_for(obj)
+      if(obj.is_a? Array)
+        data = []
+        obj.each do |sub|
+          data << subnames_for(sub)
+        end
+      end
+      if(obj.is_a? Hash)
+        data = obj.keys
+        obj.each do |name,value|
+          if(value.is_a?(Hash) || value.is_a?(Array))
+            data.delete(name)
+            subs = {}
+            subs[name] = subnames_for(value)
+            data << subs
+          end
+        end
+      end
+      return data
+    end
+    def names_at(search)
+      cursor = fields
+      while(search.length > 0)
+        nextKey = search.shift
+        # if(cursor.is_a?(Array) && !nextKey.is_a?(Integer))
+        #   byebug
+        # end
+        if((cursor.is_a?(Hash) && cursor.include?(nextKey)) || (cursor.is_a?(Array) && cursor.length > nextKey))
+          cursor = cursor[nextKey]
+        end
+      end
+      return subnames_for(cursor)
+    end
+    def field_name_for(search)
+      search.each_index do |i|
+        search[i] = search[i].to_s
+      end
+      return "component[fields[#{search.join('][')}]]"
+    end
+    def each_field(search=[], &block)
+      rootSearch = search.clone
+      fieldnames = names_at(search.clone)
 
+      fieldnames.each_index do |i|
+        item = fieldnames[i]
+        search = rootSearch.clone
+        if(item.is_a? Symbol)
+          search = rootSearch.clone
+          search << item
+          name = field_name_for(search.clone)
+          value = get_field(search.clone)
+          label = item
+          type = typeOf(search.clone)
+          yield(name, value, label,type)
+        elsif(item.is_a? Hash)
+          search = rootSearch.clone
+          search << item.keys.first
+          each_field(search, &block)
+        elsif(item.is_a? Array)
+          search = rootSearch.clone
+          search << i
+          newRoot = search.clone
+          item.each_index do |i|
+            search = newRoot.clone
+            f = item[i]
+            search << f
+            name = field_name_for(search.clone)
+            value = get_field(search.clone)
+            label = f
+            type = typeOf(search.clone)
+            yield(name, value, label, type, search)
+          end
+        end
+      end
+    end
+    def params
+      excludes = [:created_at, :updated_at]
+      data = Component.columns.collect{|c| c.name.to_sym }
+      data = data.reject{|f| excludes.include?(f)}
+      data.delete(:fields)
+      data << {fields:self.field_names(true)}
+      return data
+    end
     def required_fields
       design.required_fields
     end
@@ -63,8 +154,17 @@ module Gooey
       end
     end
 
-    def get_field(key)
-      fields[key]
+    def get_field(keyOrArr)
+      if(keyOrArr.is_a? Array)
+        cursor = fields
+        while(keyOrArr.length > 0)
+          nextIndex = keyOrArr.shift
+          cursor = cursor[nextIndex]
+        end
+        return cursor
+      else
+        return fields[keyOrArr]
+      end
     end
 
     def set_field(key,value)
@@ -111,55 +211,38 @@ module Gooey
     def build_editor_with(formObj,addLabel=true)
       outStr = ""
 
-      field_types.each do |name, type|
-        # outStr = outStr + "<div class='field'>"
-
-        if(type.include? "array")
-          types = type.split(':')
-          types.delete('array')
-          type = types.join(':')
+      each_field do |name,value,label,type,search|
+        if(label.to_s != "contentOnly")
           form_field_type = form_field_for_type(type)
-          if(addLabel)
-            outStr = outStr + formObj.label(name.to_s)
+          if(label.to_s == "pointer")
+            label = "#{search.first.to_s.singularize} #{search[1]+1} Type"
           end
-          if(formObj.respond_to? "form_group")
-            outStr = outStr + formObj.form_group(name.to_sym) do
-              fields[name].each do |field|
-                render_field(formObj, name, field, form_field_type,false, true)
-              end
-            end
-          else
-            fields[name].each do |field|
-              outStr = outStr + render_field(formObj, name, field, form_field_type,false,true)
-              outStr = outStr + "<br>"
-            end
-          end
-          outStr = outStr + "<button>Add #{name.to_s.singularize}</button>"
-        else
-          form_field_type = form_field_for_type(type)
-          outStr = outStr + render_field(formObj, name, fields[name], form_field_type,addLabel)
+          outStr = outStr + render_field(formObj, name, value, form_field_type,addLabel,label)
         end
       end
       return outStr
     end
 
-    def render_field(formObj, name, value, form_field_type, addLabel, asArray=false)
+    def render_field(formObj, name, value, form_field_type, addLabel, label=nil)
+      if(label.nil?)
+        label = name
+      end
+      label = label.to_s.humanize
       fieldStr = ""
       # name = "fields[#{name}]"
-      if(asArray)
-        name = name.to_s+"[]"
-      end
+
       if(form_field_type == "text_field")
         fieldStr = fieldStr + "<div class='field'>"
         if(addLabel)
-          fieldStr = fieldStr + formObj.label(name.to_s)
+
+          fieldStr = fieldStr + formObj.label(label)
         end
         name = "fields[#{name}]"
         fieldStr = fieldStr + formObj.send(form_field_type, name.to_sym, value: value)
       elsif (form_field_type == "check_box")
         fieldStr = fieldStr + "<div class='field'>"
         if(addLabel)
-          fieldStr = fieldStr + formObj.label(name.to_s)
+          fieldStr = fieldStr + formObj.label(label)
         end
         name = "fields[#{name}]"
         value = "checked" if(value)
@@ -167,7 +250,7 @@ module Gooey
       elsif (form_field_type == "link_select")
         fieldStr = fieldStr + "<div class='field'>"
         if(addLabel)
-          fieldStr = fieldStr + formObj.label(name.to_s)
+          fieldStr = fieldStr + formObj.label(label)
         end
         name = "fields[#{name}]"
         pointerLink = is_pointer(value)
@@ -186,16 +269,26 @@ module Gooey
       elsif (form_field_type == "file_select")
         fieldStr = fieldStr + "<div class='field addCloseBtn'>"
         if(addLabel)
-          fieldStr = fieldStr + formObj.label(name.to_s)
+          fieldStr = fieldStr + formObj.label(label)
         end
         name = "fields[#{name}]"
         entity = parse_pointer(value)
         opts = entity[:scope].constantize.all.collect { |p| [ p.name, p.pointer ] }
         selected = value
-        fieldStr = fieldStr + formObj.send("select","listGalleries".to_sym, opts, selected:selected)
+        fieldStr = fieldStr + formObj.send("select","listGalleries".to_sym, opts, selected:selected, label:label)
         file_indexer = entity[:scope].constantize.where({slug:entity[:slug]}).first
         opts = file_indexer.filenames.map{|name| [name.to_s, file_indexer.pointer(name.to_s)]}
         fieldStr = fieldStr + formObj.send("select",name.to_sym, opts, selected:entity[:resource])
+      elsif(form_field_type == "subcomponent")
+        fieldStr = fieldStr + "<div class='field'>"
+        thisDesign = self.design.name
+        if(addLabel)
+          fieldStr = fieldStr + formObj.label(label)
+        end
+        opts = Design.where({primitive:false}).reject{|p| p.name == thisDesign }.collect { |p| [ p.name, p.pointer ] }
+        opts << ["Image",Design.where({name:"image"}).first.pointer]
+        selected = value
+        fieldStr = fieldStr + formObj.send("select","listDesigns".to_sym, opts, selected:selected, label:label)
       end
       fieldStr = fieldStr + "</div>"
 
@@ -240,6 +333,8 @@ module Gooey
           "link_select"
         elsif(typeStr == "pointer:file")
           "file_select"
+        elsif(typeStr == "pointer:gooey")
+          "subcomponent"
         end
       end
       def opening_tag

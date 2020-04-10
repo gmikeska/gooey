@@ -80,6 +80,7 @@ module Gooey
 
         # Only allow a list of trusted parameters through.
         def design_params
+          @design = Gooey::Design.find(params[:id])
           params.require(:design).permit(:name, :fields,:options,:content_template,:tag)
 
         end

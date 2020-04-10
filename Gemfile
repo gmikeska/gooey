@@ -5,6 +5,8 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 # Bundler will treat runtime dependencies like base dependencies, and
 # development dependencies will be added by default to the :development group.
 gem 'activesupport'
+gem 'webpacker'
+gem 'image_processing'
 group :development, :test do
     gem "byebug"
     # There may be other lines in this block already. Simply append the following after:
