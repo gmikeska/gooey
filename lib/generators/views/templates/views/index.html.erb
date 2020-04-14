@@ -14,7 +14,7 @@
   <tbody>
     <%= "<% @#{plural_name}.each do |#{singular_name}| %%>" %>
       <tr><% display_attributes.each do |attribute| %><% if(attribute.name == "as_html") %>
-        <%= render_td("<%== #{singular_name}.as_html(false) %%>",0,'.7') %> <% elsif(attribute.name == "fields") %>
+        <%= render_td("<%== #{singular_name}.as_html %%>",0,'.7') %> <% elsif(attribute.name == "fields") %>
         <%= render_td("#{render_field_list}") %> <% else %>
         <%= render_td("<%= #{singular_name}.#{attribute.name} %%>") %> <% end %><% end %>
         <%= render_td(render_meta_link('Show',"#{singular_name}_path(#{singular_name})","class: 'btn btn-sm btn-outline-info'")) %>

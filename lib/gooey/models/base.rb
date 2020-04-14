@@ -6,6 +6,10 @@ module Gooey
     def resource_type
       "gooey"
     end
+    def params
+      data = self.class.columns.collect{|c| c.name.to_sym }
+      return data
+    end
     def resource_scope
       self.class.name.downcase
     end
@@ -19,9 +23,9 @@ module Gooey
       Rails.application.routes.url_helpers.polymorphic_url(self, only_path: true)
     end
     def get_url(pointer)
-      puts "*************"
+
       puts pointer
-      puts "*************"
+
       if(pointer.include? "file")
         target = parse_pointer(pointer)
         return target[:scope].capitalize.constantize.where({slug:target[:slug]}).first.get_url(target[:resource])

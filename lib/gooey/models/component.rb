@@ -12,12 +12,13 @@ module Gooey
       # Fields are submitted to the controller by field key, so first update field, then update the rest of the model.
       design.name
     end
+
     def update(data)
       # Fields are submitted to the controller by field key, so first update field, then update the rest of the model.
       set_fields(data[:fields])
-      data[:fields] = fields
-      super(data)
+      # super(data)
     end
+
     def field_names(recursive = false)
       names = fields.keys
       if(recursive)
@@ -65,10 +66,9 @@ module Gooey
       return subnames_for(cursor)
     end
     def field_name_for(search)
-      search.each_index do |i|
-        search[i] = search[i].to_s
-      end
-      return "component[fields[#{search.join('][')}]]"
+
+      # return "component_fields[#{search.join('][')}]"
+      return search.last
     end
     def each_field(search=[], &block)
       rootSearch = search.clone
@@ -168,7 +168,7 @@ module Gooey
     end
 
     def set_field(key,value)
-      fields[key] = value
+      fields[key.to_sym] = value
       save()
     end
 

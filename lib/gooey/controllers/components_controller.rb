@@ -20,9 +20,7 @@ module Gooey
         render partial:"preview"
       end
 
-      def updateFields
 
-      end
 
       # GET /components/new
       def new
@@ -54,11 +52,17 @@ module Gooey
       # PATCH/PUT /components/1.json
       def update
         respond_to do |format|
-          puts component_params
+            puts "*************Incoming data"
+            puts component_params[:fields]
+            puts "*************"
+          puts component_params[:fields]
           if @component.update(component_params)
             set_component
+            puts "*************AfterSave"
+            puts component[:fields]
+            puts "*************"
             format.html { render partial:"preview" }
-            format.json { render partial:"preview", status: :ok, location: @component }
+            format.json { render partial:"preview", status: :ok }
           else
             format.html { render :edit }
             format.json { render json: @component.errors, status: :unprocessable_entity }

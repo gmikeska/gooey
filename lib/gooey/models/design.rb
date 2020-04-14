@@ -221,7 +221,7 @@ module Gooey
     def scanner
       Regexp.new(Regexp.escape(varPrefix)+"("+"\\S+"+")"+Regexp.escape(varSuffix))
     end
-
+    
     def as_html(values=nil, include_scripts=true)
       if(values.nil?)
         values = defaults

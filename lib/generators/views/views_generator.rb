@@ -46,12 +46,12 @@ module Gooey
             open = "<td>"
           end
           close = "</td>"
-          return open+content+close.indent(indent)
+          return open+content+close
         end
         def render_th(content,indent=0)
           open = "<th>"
           close = "</th>"
-          return open+content+close.indend(indent)
+          return open+content+close
         end
         def render_field_list
           %Q(<% design.fields.each do |k,v| %>
